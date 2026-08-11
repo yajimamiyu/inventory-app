@@ -1,0 +1,95 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>入出庫履歴</title>
+    <link rel="stylesheet" href="{% static 'inventory/style.css' %}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>入出庫履歴</h1>
+        <p>商品の入出庫履歴を確認できます</p>
+    </div>
+
+    <a
+        href="{% url 'product_list' %}"
+        class="back-link"
+    >
+        ← 商品一覧に戻る
+    </a>
+
+    <div class="card">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>日時</th>
+                    <th>商品コード</th>
+                    <th>商品名</th>
+                    <th>種別</th>
+                    <th>数量</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for movement in movements %}
+
+                <tr>
+
+                    <td>
+                        {{ movement.created_at|date:"Y/m/d H:i" }}
+                    </td>
+
+                    <td>
+                        {{ movement.product.code }}
+                    </td>
+
+                    <td>
+                        {{ movement.product.name }}
+                    </td>
+
+                    <td>
+                        {% if movement.movement_type == "IN" %}
+                            <span class="badge badge-in">
+                                入庫
+                            </span>
+                        {% else %}
+                            <span class="badge badge-out">
+                                出庫
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ movement.quantity }} 個
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="5">
+                        入出庫履歴がありません。
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

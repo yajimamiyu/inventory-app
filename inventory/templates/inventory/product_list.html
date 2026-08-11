@@ -1,0 +1,137 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在庫管理</title>
+    <link rel="stylesheet" href="{% static 'inventory/style.css' %}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>在庫管理</h1>
+        <p>商品の在庫状況を管理します</p>
+    </div>
+
+    <div class="card">
+
+        <div class="card-header">
+            <h2>商品一覧</h2>
+
+            <a
+                href="{% url 'movement_list' %}"
+                class="button button-history"
+            >
+                入出庫履歴
+            </a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>商品コード</th>
+                    <th>商品名</th>
+                    <th>在庫数</th>
+                    <th>入庫</th>
+                    <th>出庫</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for product in products %}
+                <tr>
+
+                    <td>{{ product.code }}</td>
+
+                    <td>{{ product.name }}</td>
+
+                    <td>
+                        {% if product.quantity == 0 %}
+                            <span class="stock stock-zero">
+                                0 個
+                            </span>
+                        {% elif product.quantity <= 10 %}
+                            <span class="stock stock-low">
+                                {{ product.quantity }} 個
+                            </span>
+                        {% else %}
+                            <span class="stock">
+                                {{ product.quantity }} 個
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <form
+                            method="post"
+                            action="{% url 'stock_in' product.id %}"
+                        >
+                            {% csrf_token %}
+
+                            <input
+                                type="number"
+                                name="quantity"
+                                min="1"
+                                placeholder="数量"
+                                required
+                            >
+
+                            <button
+                                type="submit"
+                                class="button-in"
+                            >
+                                入庫
+                            </button>
+                        </form>
+                    </td>
+
+                    <td>
+                        <form
+                            method="post"
+                            action="{% url 'stock_out' product.id %}"
+                        >
+                            {% csrf_token %}
+
+                            <input
+                                type="number"
+                                name="quantity"
+                                min="1"
+                                placeholder="数量"
+                                required
+                            >
+
+                            <button
+                                type="submit"
+                                class="button-out"
+                            >
+                                出庫
+                            </button>
+                        </form>
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="5">
+                        商品が登録されていません。
+                    </td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
